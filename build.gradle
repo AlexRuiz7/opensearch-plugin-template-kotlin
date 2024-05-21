@@ -6,6 +6,8 @@ apply plugin: 'eclipse'
 apply plugin: 'opensearch.opensearchplugin'
 apply plugin: 'opensearch.yaml-rest-test'
 apply plugin: 'opensearch.pluginzip'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'org.jetbrains.kotlin.plugin.allopen'
 
 def pluginName = 'rename'
 def pluginDescription = 'Custom plugin'
@@ -18,9 +20,9 @@ tasks.register("preparePluginPathDirs") {
     mustRunAfter clean
     doLast {
         def newPath = pathToPlugin.replace(".", "/")
-        mkdir "src/main/java/org/opensearch/$newPath"
-        mkdir "src/test/java/org/opensearch/$newPath"
-        mkdir "src/yamlRestTest/java/org/opensearch/$newPath"
+        mkdir "src/main/kotlin/org/opensearch/$newPath"
+        mkdir "src/test/kotlin/org/opensearch/$newPath"
+        mkdir "src/yamlRestTest/kotlin/org/opensearch/$newPath"
     }
 }
 
@@ -39,7 +41,7 @@ publishing {
               developers {
                 developer {
                   name = "OpenSearch"
-                  url = "https://github.com/opensearch-project/opensearch-plugin-template-java"
+                  url = "https://github.com/opensearch-project/opensearch-plugin-template-kotlin"
                 }
               }
             }
@@ -64,6 +66,7 @@ validateNebulaPom.enabled = false
 buildscript {
     ext {
         opensearch_version = System.getProperty("opensearch.version", "3.0.0-SNAPSHOT")
+        kotlin_version = System.getProperty("kotlin.version", "1.8.21")
     }
 
     repositories {
@@ -75,6 +78,41 @@ buildscript {
 
     dependencies {
         classpath "org.opensearch.gradle:build-tools:${opensearch_version}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlin_version}"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:${kotlin_version}"
+    }
+}
+
+dependencies {
+    implementation "org.opensearch:opensearch:${opensearch_version}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-common:${kotlin_version}"
+    testImplementation "org.opensearch.test:framework:${opensearch_version}"
+    testImplementation "org.jetbrains.kotlin:kotlin-test:${kotlin_version}"
+}
+
+sourceSets {
+    main.kotlin.srcDirs += 'src/main/kotlin'
+    main.java.srcDirs += 'src/main/java'
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
     }
 }
 
