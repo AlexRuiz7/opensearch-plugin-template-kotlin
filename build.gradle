@@ -91,30 +91,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test:${kotlin_version}"
 }
 
-sourceSets {
-    main.kotlin.srcDirs += 'src/main/kotlin'
-    main.java.srcDirs += 'src/main/java'
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
-    }
-}
+dependencyLicenses.enabled = false
 
 repositories {
     mavenLocal()
